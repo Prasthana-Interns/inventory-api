@@ -10,11 +10,9 @@ class ApplicationController < ActionController::API
     token_header = request.headers["Authorization"]
     if token_header
       token = token_header.split(" ")[0]
-      byebug
       begin
           JWT.decode(token,'SECRET_KEY')
-      rescue JWT::DecodeError => e
-        # render json: { message: e.message }      
+      rescue JWT::DecodeError => e    
       end
     end
   end

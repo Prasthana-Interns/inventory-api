@@ -1,10 +1,7 @@
 class UsersController < ApplicationController
 
   before_action :authorized,except: [:create]
-  # before_action :authorized_user,except: [:create]
-  # before_action :set_user, only: [:show, :update, :destroy]
-  
-  # attr_accessor :current_user
+  before_action :set_user, only: [:show, :update, :destroy]
 
     def index
       users = User.all
@@ -13,10 +10,10 @@ class UsersController < ApplicationController
     
     def create
       @user = User.create(user_params)
+      params[:roles].each do |role|
+          UserRole.create(user: @user, role_id: role.to_i) 
+        end
       render json:@user,status: :ok
-      # params[:roles].each do |role|
-      #     UserRole.create(user: @user, role_id: role.to_i) 
-      #   end
     end
 
     def show
@@ -39,6 +36,7 @@ class UsersController < ApplicationController
     private
 
     def set_user
+      byebug
       @user = User.find_by(emp_id: params[:emp_id])
     end
 

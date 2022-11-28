@@ -25,31 +25,11 @@ class SessionsController < ApplicationController
   end
 
   def logout
-    @current_user[:emp_id] = nil
+    byebug
+    p user.emp_id
+    user[:emp_id] = nil
+    p user.emp_id
+
   end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-  # def create
-  #  user =User.find_by(email: params[:session][:email].downcase)
-  #  if user && user.authenticate(params[:session][:password])
-  #   session[:user_id]=user.id
-  #   render json: user
-  #  else
-  #   render json: {errors: user.errors.messages}
-  #  end
-  # end
-
-  # def destroy
-  #   session[:user_id]=nil
-  # end
