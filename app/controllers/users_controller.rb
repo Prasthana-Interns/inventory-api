@@ -1,33 +1,48 @@
 class UsersController < ApplicationController
-   def index
-        participants = Participant.all
 
-        render json: participants
+  before_action :authorized,except: [:create]
+  # before_action :authorized_user,except: [:create]
+  # before_action :set_user, only: [:show, :update, :destroy]
+  
+  # attr_accessor :current_user
+
+    def index
+      users = User.all
+      render json: users,status: :ok
     end
     
-    
     def create
-        participant = Participant.create(participant_params)
-
-        
-        
-        params[:roles].each do |role|
-            ParticipantRole.create(participant: participant, role_id: role.to_i)
-        end
-        
-        render json: participant, serializer: ParticipantSerializer
+      @user = User.create(user_params)
+      render json:@user,status: :ok
+      # params[:roles].each do |role|
+      #     UserRole.create(user: @user, role_id: role.to_i) 
+      #   end
     end
 
     def show
-        participant = Participant.find(params[:id])
-
-        render json: participant 
+      render json: @user
     end
 
+    def update
+      @user.update(user_params)
+        render json: @user
+    end
 
+    def destroy
+     @user.destroy
+    end
+
+    def pending_users
+      @users = User.where("approved": false)
+      render json: @users
+    end
     private
 
-    def participant_params
-        params.require(:participant).permit(:name, :mobile_number)
+    def set_user
+      @user = User.find_by(emp_id: params[:emp_id])
+    end
+
+    def user_params
+      params.require(:user).permit(:name, :phone_number, :email, :designaton, :password, :approved, :emp_id)
     end
 end
