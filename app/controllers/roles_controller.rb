@@ -2,7 +2,7 @@ class RolesController < ApplicationController
 
     def create
       role = Role.create(role_params)
-      render json: role
+      render json: role,serializer: :RoleSerializer
     end
 
     private

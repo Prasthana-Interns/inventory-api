@@ -1,3 +1,10 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-end
+  resources :roles
+  resources :users 
+  post 'accept_pending_request',to: 'users#accept_pending_request'
+  get 'pending_users',to: 'users#pending_users'
+  post 'users/signup',to: 'users#create'
+  post 'users/signin',to: 'sessions#login'
+  put 'reset_password',to: 'sessions#reset_password'
+  delete 'signout',to: 'sessions#logout'
+ end

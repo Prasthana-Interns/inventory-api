@@ -4,8 +4,7 @@ class UserRoles < ActiveRecord::Migration[6.0]
     create_table :user_roles do |t|
       t.references :user
       t.references :role
-      
-
+   
       t.timestamps
     end
   end

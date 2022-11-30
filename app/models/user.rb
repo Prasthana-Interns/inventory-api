@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_many :user_roles
   has_many :roles,through: :user_roles
 
-  after_save :set_emp_id 
+  after_create :set_emp_id 
   before_save {self.email = email.downcase}
 
   has_secure_password
