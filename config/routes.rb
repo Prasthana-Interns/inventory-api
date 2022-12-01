@@ -8,5 +8,11 @@ Rails.application.routes.draw do
   
   post 'users/signup',to: 'users#create'
   post 'users/signin',to: 'sessions#login'
+
+
+  resources :devices 
+        get 'unassignd_all', to: 'devices#unassignd_all'
+        get 'assigned_all' , to: 'devices#assigned_all'
+        get 'search'       , to: 'devices#search'
   
  end

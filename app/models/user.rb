@@ -2,6 +2,7 @@ class User < ApplicationRecord
 
   has_secure_password
   has_many :user_roles
+  has_many :devices, dependent: :nullify
   after_create :set_emp_id 
   before_save {self.email = email.downcase}
 

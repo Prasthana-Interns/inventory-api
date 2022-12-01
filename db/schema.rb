@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_01_091446) do
+ActiveRecord::Schema.define(version: 2022_12_01_164718) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "devices", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "device_type", null: false
+    t.string "device_no"
+    t.string "os"
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
 
   create_table "user_roles", force: :cascade do |t|
     t.string "role_type", null: false
