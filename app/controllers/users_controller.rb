@@ -1,49 +1,43 @@
 class UsersController < ApplicationController
 
-  before_action :authorize_admin_token,except: [:create]
+  before_action :authorize_admin_access,except: [:create, :show, :login]
+  before_action :authorize_employee_access,only: [:show]
   before_action :set_user, only: [:update, :destroy, :accept_pending_request]
 
     def index
-      if  @current_user.roles.exists?("role_type": 'Admin')
-        users = User.all
-        render json: users,status: :ok
-      else
-        render json: { message: :unauthorized },status: :unauthorized
-      end
+      users = User.where("approved": true)
+      render json: users,status: :ok,each_serializer: UserSerializer
     end
     
     def create
       @user = User.create(user_params)
         params[:roles].each do |role|
-          UserRole.create(user: @user, role_id: role.to_i) 
+          UserRole.create(user: @user, role_type: role) 
       end
-      render json: @user ,status: :ok,serializer: UserSerializer
+      render json: @user,status: :created, serializer: UserSerializer
     end
 
     def show
-       @user = User.find_by(emp_id: params[:emp_id])
-      render json: @user,serializer: UserSerializer
+        @user = User.find(params[:id])
+        render json: @user, status: :ok, serializer: UserSerializer
     end
 
     def update
       @user.update(user_params)
-      render json: @user,serializer: UserSerializer
+      render json: @user, status: :ok, serializer: UserSerializer
     end
 
     def destroy
-     @user.destroy
+      @user.destroy
+      render status: :ok
     end
 
     def pending_users
-     if @current_user.roles.exists?("role_type": 'Admin')
-        begin
-           @users = User.where("approved": false)
-          render json: @users
-        rescue 
-         render json: "No pending users"
-        end
+        @users = User.where("approved": false)
+      if @users.empty?
+        render status: :no_content
       else
-         render json: { message: :unauthorized },status: :unauthorized
+        render json:@users, status: :ok
       end
     end
 
@@ -56,13 +50,11 @@ class UsersController < ApplicationController
     private
 
     def set_user
-      @user = User.find_by(emp_id: params[:emp_id]) if @current_user.roles.exists?("role_type": 'Admin')
-      render json: { message: :unauthorized },status: :unauthorized unless @current_user.roles.exists?("role_type": 'Admin')
-
+      @user = User.find(params[:id])
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :designaton, :password, :approved, :emp_id)
+      params.require(:user).permit(:name, :phone_number, :email, :designaton, :password)
     end
 
 end

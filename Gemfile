@@ -18,6 +18,8 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'jwt'
 gem 'active_model_serializers'
 
+gem 'indentation', '~> 0.1.1'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

@@ -1,18 +1,15 @@
 class User < ApplicationRecord
 
+  has_secure_password
   has_many :user_roles
-  has_many :roles,through: :user_roles
-
   after_create :set_emp_id 
   before_save {self.email = email.downcase}
 
-  has_secure_password
-
-    def set_emp_id 
-      if self.emp_id == nil
-       self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
-      end
+  def set_emp_id 
+    if self.emp_id == nil
+      self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
     end
+  end
  
   validates :name,presence: true,length: {minimum: 3},format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/ }
 
