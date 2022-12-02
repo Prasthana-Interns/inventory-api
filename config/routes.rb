@@ -4,15 +4,16 @@ Rails.application.routes.draw do
   resources :users do 
     get :pending_users, on: :collection
     post :accept_pending_request,on: :member
+    get :search , on: :collection
   end  
   
   post 'users/signup',to: 'users#create'
   post 'users/signin',to: 'sessions#login'
 
 
-  resources :devices 
-        get 'unassignd_all', to: 'devices#unassignd_all'
-        get 'assigned_all' , to: 'devices#assigned_all'
-        get 'search'       , to: 'devices#search'
-  
- end
+  resources :devices  do
+    get :unassigned, on: :collection
+    get :assigned ,  on: :collection
+    get :search   ,  on: :collection
+  end
+end

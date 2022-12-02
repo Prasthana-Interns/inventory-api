@@ -1,5 +1,5 @@
 class DevicesController < ApplicationController
-
+     before_action :authorize_admin_access
 def index
     devices = Device.all
     render json: devices, each_serializer: DeviceSerializer, status: :ok
@@ -7,7 +7,7 @@ def index
 
  def search
      @device = Device.search(params[:search])
-     render json: @device, each_serializer: DeviceSerializer
+     render json: @device, each_serializer: DeviceSerializer, status: :ok
  end
 
  def create
@@ -23,7 +23,7 @@ def index
  def update
      device = find_devices
      device.update(device_params)
-     render json: device, status: :ok
+     render json: device, serializer: DeviceSerializer, status: :ok
  end
 
  def assigned
@@ -31,7 +31,7 @@ def index
      render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
 
- def unassignd
+ def unassigned
      devices = Device.where(user_id: nil)
      render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
@@ -39,7 +39,7 @@ def index
  private
 
    def device_params
-     params.require(:device).permit(:name, :device_type, :os, :user)
+     params.require(:device).permit(:name, :device_type, :os, :user_id)
    end
 
    def find_devices
