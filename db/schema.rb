@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(version: 2022_12_01_164718) do
     t.string "name", null: false
     t.bigint "phone_number"
     t.string "email", null: false
-    t.string "designaton", null: false
+    t.string "designation", null: false
     t.string "password_digest"
     t.boolean "approved", default: false
     t.datetime "created_at", precision: 6, null: false

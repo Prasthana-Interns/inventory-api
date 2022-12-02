@@ -17,6 +17,11 @@ class UsersController < ApplicationController
       render json: @user,status: :created, serializer: UserSerializer
     end
 
+    def search
+      @device = Device.search(params[:search])
+      render json: @device, each_serializer: DeviceSerializer, status: :ok
+    end
+
     def show
         @user = User.find(params[:id])
         render json: @user, status: :ok, serializer: UserSerializer
@@ -54,7 +59,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :designaton, :password)
+      params.require(:user).permit(:name, :phone_number, :email, :designation, :password, :approved)
     end
 
 end
