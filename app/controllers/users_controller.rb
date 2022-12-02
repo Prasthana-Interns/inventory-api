@@ -18,8 +18,17 @@ class UsersController < ApplicationController
     end
 
     def show
+       if @current_user.user_roles.pluck(:role_type).include?('Admin')
         @user = User.find(params[:id])
         render json: @user, status: :ok, serializer: UserSerializer
+      else
+        if @current_user.id  == params[:id].to_i 
+          @user = User.find(params[:id])
+          render json: @user, status: :ok, serializer: UserSerializer
+        else
+          render json: "Unauthorized", status: :unauthorized
+        end
+      end
     end
 
     def update
