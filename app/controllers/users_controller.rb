@@ -10,26 +10,26 @@ class UsersController < ApplicationController
     end
     
     def create
-      @user = User.create(user_params)
+      @user = User.create!(user_params)
         params[:roles].each do |role|
           UserRole.create(user: @user, role_type: role) 
       end
-      render json: @user,status: :created, serializer: UserSerializer
+      render json: @user,status: :created, serializer: EmployeeSerializer
     end
 
     def search
-      @device = Device.search(params[:search])
+      @device = User.search(params[:search])
       render json: @device, each_serializer: DeviceSerializer, status: :ok
     end
 
     def show
-        @user = User.find(params[:id])
+        @user = set_user
         render json: @user, status: :ok, serializer: UserSerializer
     end
 
     def update
       @user.update(user_params)
-      render json: @user, status: :ok, serializer: UserSerializer
+      render json: @user, status: :ok, serializer: EmployeeSerializer
     end
 
     def destroy
@@ -42,15 +42,15 @@ class UsersController < ApplicationController
       if @users.empty?
         render status: :no_content
       else
-        render json:@users, status: :ok
+        render json:@users, status: :ok, serializer: EmployeeSerializer
       end
     end
 
     def accept_pending_request
         @user.approved = true
         @user.update("approved":true)
-        render json: {message: "approve successful"},status: :ok
-    end
+        render json: {message: "approve successful"}, status: :ok, each_serializer: UserSerializer
+    end 
 
     private
 
@@ -59,7 +59,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :designation, :password, :approved)
+      params.require(:user).permit(:name, :phone_number, :email, :password, :designation, :approved)
     end
 
 end
