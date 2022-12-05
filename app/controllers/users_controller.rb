@@ -14,7 +14,7 @@ class UsersController < ApplicationController
         params[:roles].each do |role|
           UserRole.create(user: @user, role_type: role) 
       end
-      render json: @user,status: :created, serializer: EmpSerializerSerializer
+      render json: @user,status: :created, serializer: EmployeeSerializer
     end
 
     def search
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
     def update
       @user.update(user_params)
-      render json: @user, status: :ok, serializer: EmpSerializerSerializer
+      render json: @user, status: :ok, serializer: EmployeeSerializer
     end
 
     def destroy
@@ -42,7 +42,7 @@ class UsersController < ApplicationController
       if @users.empty?
         render status: :no_content
       else
-        render json:@users, status: :ok, serializer: EmpSerializerSerializer
+        render json:@users, status: :ok, serializer: EmployeeSerializer
       end
     end
 
