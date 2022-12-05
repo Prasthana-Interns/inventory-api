@@ -10,11 +10,11 @@ class UsersController < ApplicationController
     end
     
     def create
-      @user = User.create(user_params)
+      @user = User.create!(user_params)
         params[:roles].each do |role|
           UserRole.create(user: @user, role_type: role) 
       end
-      render json: @user,status: :created, serializer: UserSerializer
+      render json: @user,status: :created, serializer: EmpSerializerSerializer
     end
 
     def search
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
     def update
       @user.update(user_params)
-      render json: @user, status: :ok, serializer: UserSerializer
+      render json: @user, status: :ok, serializer: EmpSerializerSerializer
     end
 
     def destroy
@@ -42,15 +42,16 @@ class UsersController < ApplicationController
       if @users.empty?
         render status: :no_content
       else
-        render json:@users, status: :ok
+        render json:@users, status: :ok, serializer: EmpSerializerSerializer
       end
     end
 
     def accept_pending_request
         @user.approved = true
         @user.update("approved":true)
-        render json: {message: "approve successful"},status: :ok
+        render json: {message: "approve successful"}, status: :ok, each_serializer: UserSerializer
     end 
+
     private
 
     def set_user
