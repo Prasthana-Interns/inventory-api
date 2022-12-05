@@ -21,9 +21,9 @@ class UsersController < ApplicationController
       @device = User.search(params[:search])
       render json: @device, each_serializer: DeviceSerializer, status: :ok
     end
-    
+
     def show
-        @user = User.find(params[:id])
+        @user = set_user
         render json: @user, status: :ok, serializer: UserSerializer
     end
 
@@ -51,12 +51,6 @@ class UsersController < ApplicationController
         @user.update("approved":true)
         render json: {message: "approve successful"},status: :ok
     end 
-
-    def forgot_password
-        user =User.find_by(empl)
-        user.password= nil
-    end 
-
     private
 
     def set_user
@@ -64,7 +58,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :designation, :password, :approved)
+      params.require(:user).permit(:name, :phone_number, :email, :password, :designation, :approved)
     end
 
 end
