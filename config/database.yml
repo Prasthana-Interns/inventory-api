@@ -86,5 +86,5 @@ test:
 production:
   <<: *default
   database: inventory_api_production
-  username: inventory_api
-  password: <%= ENV['INVENTORY_API_DATABASE_PASSWORD'] %>
+  username: deploy
+  password: <%= ENV['DEPLOY_DATABASE_PASSWORD'] %>
