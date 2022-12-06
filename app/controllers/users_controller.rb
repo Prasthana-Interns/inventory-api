@@ -1,32 +1,40 @@
 class UsersController < ApplicationController
-
-  before_action :authorize_admin_access,except: [:create, :show, :login]
+ 
+  before_action :authorize_admin_access,except: [:create, :show]
   before_action :authorize_employee_access,only: [:show]
-  before_action :set_user, only: [:update, :destroy, :accept_pending_request]
+  before_action :set_user, only: [:update, :destroy, :accept_pending_request, :show]
 
     def index
       users = User.where("approved": true)
       render json: users,status: :ok,each_serializer: UserSerializer
-    end
+    end 
     
     def create
-      @user = User.create!(user_params)
-        params[:roles].each do |role|
-          UserRole.create(user: @user, role_type: role) 
+      begin
+        @user = User.create!(user_params)
+          params[:roles].each do |role|
+            UserRole.create!(user: @user, role_type: role) 
+          end
+        render json: @user,status: :created, serializer: EmployeeSerializer
+      rescue ActiveRecord::RecordInvalid => e 
+        render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
       end
+    end
+
+    def search
+      @user = User.search(params[:search])
+      render json: @user, each_serializer: UserSerializer, status: :ok
+    end
+
+    def show
       render json: @user,status: :created, serializer: EmployeeSerializer
     end
 
     def search
-      @device = User.search(params[:search])
-      render json: @device, each_serializer: DeviceSerializer, status: :ok
+      @user = User.search(params[:search])
+      render json: @user, each_serializer: UserSerializer, status: :ok
     end
-
-    def show
-        @user = set_user
-        render json: @user, status: :ok, serializer: UserSerializer
-    end
-
+    
     def update
       @user.update(user_params)
       render json: @user, status: :ok, serializer: EmployeeSerializer
@@ -59,7 +67,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :password, :designation, :approved)
+      params.require(:user).permit(:name, :phone_number, :email, :designation, :approved)
     end
 
 end

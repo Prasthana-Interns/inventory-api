@@ -1,18 +1,26 @@
 class SessionsController < ApplicationController
 
-   def login
+  def login
      @user = User.find_by( emp_id: params[:user][:emp_id] )
-      if @user.approved == true
+      if @user.approved == true 
+        @user.update(password:params[:user][:password])  if @user.password_digest == nil
         if @user && @user.authenticate(params[:user][:password])
-          token=encode_token({user_id: @user.id})
-          time = (Time.now+24.hours).strftime("%m-%d-%Y %H:%M").to_i
-          render json: { user: @user,userrole: @user.user_roles, token: token}
-        else
+          @token=encode_token({user_id: @user.id})
+          render json: { user: SessionSerializer.new(@user), token: @token }, status: :ok
+        else 
           render json: { error: "Invalid emp_id or password" },status: :unprocessable_entity
         end
       else
         render json: { message: "unauthorized" },status: :unauthorized
       end
+  end
+
+  def reset_password
+    user = User.find_by_emp_id(params[:emp_id])
+    user.update(password_digest: nil)
+    if user.password == nil
+      render json: {message: "Your password as been reset successfully! "},status:  :ok
     end
+  end
 
 end

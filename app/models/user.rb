@@ -1,9 +1,12 @@
 class User < ApplicationRecord
 
-  has_secure_password
-  has_many :user_roles
+  has_secure_password :validations =>  false
+
+  has_many :user_roles,dependent: :destroy
   has_many :devices, dependent: :nullify
   after_create :set_emp_id 
+
+
   before_save {self.email = email.downcase}
 
   validates :name,presence: true,length: {minimum: 3},format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/ }
@@ -14,13 +17,12 @@ class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   validates :email,presence: true,format: { with: VALID_EMAIL_REGEX},uniqueness: {case_sensitive: false}
 
+
   def self.search(search)
     if search
        where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
     end
-
-end
-
+  end
 
 private
 
