@@ -27,9 +27,14 @@ class UsersController < ApplicationController
     end
 
     def show
-        render json: @user, status: :ok, serializer: UserSerializer
+      render json: @user,status: :created, serializer: EmployeeSerializer
     end
 
+    def search
+      @user = User.search(params[:search])
+      render json: @user, each_serializer: UserSerializer, status: :ok
+    end
+    
     def update
       @user.update(user_params)
       render json: @user, status: :ok, serializer: EmployeeSerializer
