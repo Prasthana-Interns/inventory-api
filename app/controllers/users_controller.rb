@@ -15,7 +15,7 @@ class UsersController < ApplicationController
           params[:roles].each do |role|
             UserRole.create!(user: @user, role_type: role) 
           end
-        render json: @user,status: :created, serializer: UserSerializer
+        render json: @user,status: :created, serializer: EmployeeSerializer
       rescue ActiveRecord::RecordInvalid => e 
         render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
       end
@@ -27,12 +27,12 @@ class UsersController < ApplicationController
     end
 
     def show
-      render json: @user, status: :ok, serializer: UserSerializer
+        render json: @user, status: :ok, serializer: UserSerializer
     end
 
     def update
       @user.update(user_params)
-      render json: @user, status: :ok, serializer: UserSerializer
+      render json: @user, status: :ok, serializer: EmployeeSerializer
     end
 
     def destroy
@@ -45,15 +45,15 @@ class UsersController < ApplicationController
       if @users.empty?
         render status: :no_content
       else
-        render json:@users, status: :ok
+        render json:@users, status: :ok, serializer: EmployeeSerializer
       end
     end
 
     def accept_pending_request
         @user.approved = true
         @user.update("approved":true)
-        render json: {message: "approve successful"},status: :ok
-    end
+        render json: {message: "approve successful"}, status: :ok, each_serializer: UserSerializer
+    end 
 
     private
 

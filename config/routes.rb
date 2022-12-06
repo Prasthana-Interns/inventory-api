@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
 
-  resources :roles
   resources :users do 
     get :pending_users, on: :collection
     post :accept_pending_request,on: :member
@@ -17,4 +16,5 @@ Rails.application.routes.draw do
     get :assigned ,  on: :collection
     get :search   ,  on: :collection
   end
+  
 end
