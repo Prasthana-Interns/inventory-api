@@ -1,39 +1,33 @@
 class UsersController < ApplicationController
-
-  before_action :authorize_admin_access,except: [:create, :show, :login]
+ 
+  before_action :authorize_admin_access,except: [:create, :show]
   before_action :authorize_employee_access,only: [:show]
-  before_action :set_user, only: [:update, :destroy, :accept_pending_request]
+  before_action :set_user, only: [:update, :destroy, :accept_pending_request, :show]
 
     def index
       users = User.where("approved": true)
       render json: users,status: :ok,each_serializer: UserSerializer
-    end
+    end 
     
     def create
-      @user = User.create(user_params)
-        params[:roles].each do |role|
-          UserRole.create(user: @user, role_type: role) 
+      begin
+        @user = User.create!(user_params)
+          params[:roles].each do |role|
+            UserRole.create!(user: @user, role_type: role) 
+          end
+        render json: @user,status: :created, serializer: UserSerializer
+      rescue ActiveRecord::RecordInvalid => e 
+        render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
       end
-      render json: @user,status: :created, serializer: UserSerializer
     end
 
     def search
-      @device = Device.search(params[:search])
-      render json: @device, each_serializer: DeviceSerializer, status: :ok
+      @user = User.search(params[:search])
+      render json: @user, each_serializer: UserSerializer, status: :ok
     end
 
     def show
-       if @current_user.user_roles.pluck(:role_type).include?('Admin')
-        @user = User.find(params[:id])
-        render json: @user, status: :ok, serializer: UserSerializer
-      else
-        if @current_user.id  == params[:id].to_i 
-          @user = User.find(params[:id])
-          render json: @user, status: :ok, serializer: UserSerializer
-        else
-          render json: "Unauthorized", status: :unauthorized
-        end
-      end
+      render json: @user, status: :ok, serializer: UserSerializer
     end
 
     def update
@@ -68,7 +62,7 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      params.require(:user).permit(:name, :phone_number, :email, :designation, :password, :approved)
+      params.require(:user).permit(:name, :phone_number, :email, :designation, :approved)
     end
 
 end
