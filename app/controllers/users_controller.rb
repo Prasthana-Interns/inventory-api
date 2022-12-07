@@ -60,9 +60,10 @@ class UsersController < ApplicationController
       if @users.empty?
         render status: :no_content
       else
-        render json:@users, status: :ok, serializer: EmployeeSerializer
+        render json:@users, status: :ok, each_serializer: EmployeeSerializer
       end
     end
+  
 
     def accept_pending_request
         @user.approved = true
