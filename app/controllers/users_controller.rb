@@ -15,7 +15,7 @@ class UsersController < ApplicationController
           params[:roles].each do |role|
             UserRole.create!(user: @user, role_type: role) 
           end
-        render json: @user,status: :created, serializer: EmployeeSerializer
+        render json: @user,status: :created, serializer: SessionSerializer
       rescue ActiveRecord::RecordInvalid => e 
         render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
       end
@@ -27,7 +27,7 @@ class UsersController < ApplicationController
     end
 
     def show
-      render json: @user,status: :created, serializer: EmployeeSerializer
+      render json: @user,status: :ok, serializer: EmployeeSerializer
     end
 
     def search
