@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
  
   before_action :authorize_admin_access,except: [:create, :show]
-  before_action :authorize_employee_access,only: [:show]
+  before_action :authorize_employee_access,only: [:show] 
   before_action :set_user, only: [:update, :destroy, :accept_pending_request, :show]
 
     def index
@@ -27,7 +27,17 @@ class UsersController < ApplicationController
     end
 
     def show
-      render json: @user,status: :ok, serializer: EmployeeSerializer
+      if @current_user.user_roles.pluck(:role_type).include?('Admin')
+        set_user
+        render json: @user,status: :ok, serializer: UserSerializer
+      else
+        if @current_user.id  == params[:id].to_i 
+          set_user
+          render json: @user, status: :ok, serializer: UserSerializer
+        else
+          render json: {error:"Unauthorized"}, status: :unauthorized
+        end
+      end
     end
 
     def search
