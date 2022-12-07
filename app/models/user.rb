@@ -1,6 +1,6 @@
 class User < ApplicationRecord
 
-  has_secure_password
+  has_secure_password 
   has_many :user_roles
   has_many :devices, dependent: :nullify
   after_create :set_emp_id 
@@ -29,5 +29,5 @@ private
       self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
     end
   end
-
+  
 end
