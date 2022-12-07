@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 
   def encode_token(payload, exp:Time.now+24.hours)
     payload[:exp] = exp.to_i
-    JWT.encode( payload, SECRET_KEY)
+    JWT.encode( payload, SECRET_KEY  )
   end
 
   def authorize_admin_access
