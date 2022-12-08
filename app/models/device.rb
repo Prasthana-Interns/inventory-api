@@ -7,6 +7,8 @@ class Device < ApplicationRecord
     def self.search(search)
         if search
            where("name LIKE ? OR device_type LIKE ?", "%#{search}%", "%#{search}%")
+        else
+            all
         end
     end
 
