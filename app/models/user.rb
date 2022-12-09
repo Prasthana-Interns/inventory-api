@@ -1,12 +1,10 @@
 class User < ApplicationRecord
 
-  has_secure_password :validations =>  false
-
+  has_secure_password :validations => false
   has_many :user_roles,dependent: :destroy
   has_many :devices, dependent: :nullify
   after_create :set_emp_id 
-
-
+  
   before_save {self.email = email.downcase}
 
   validates :name,presence: true,length: {minimum: 3},format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/ }
@@ -30,5 +28,5 @@ private
       self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
     end
   end
-
+  
 end

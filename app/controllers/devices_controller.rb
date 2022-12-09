@@ -11,24 +11,29 @@ def index
  end
 
  def create
-     @device = Device.create(device_params)
-     render json: @device, serializer: DeviceSerializer, status: :ok
+    begin
+    @device = Device.create!(device_params)
+        render json: @device, serializer: DeviceSerializer, status: :ok
+    rescue ActiveRecord::RecordInvalid => e 
+        render json: { error: e },status: :bad_request
+    end
  end
 
  def destroy
-     device = find_devices
-     device.destroy 
+     device = find_device
+     device.destroy
+     render status: :ok
  end
 
  def update
-     device = find_devices
+     device = find_device
      device.update(device_params)
      render json: device, serializer: DeviceSerializer, status: :ok
  end
 
  def assigned
      devices = Device.where.not(user_id: nil)
-     render json: devices, each_serializer: DeviceSerializer, status: :ok
+       render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
 
  def unassigned
@@ -42,7 +47,7 @@ def index
      params.require(:device).permit(:name, :device_type, :os, :user_id)
    end
 
-   def find_devices
-     Device.find_by(device_no: params[:device][:device_no])
+   def find_device
+     Device.find(params[:id])
    end
 end
