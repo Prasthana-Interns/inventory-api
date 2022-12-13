@@ -13,7 +13,7 @@ def index
  def create
     begin
     @device = Device.create!(device_params)
-        render json: @device, serializer: DeviceSerializer, status: :ok
+    render json: ImageSerializer.new(@device).serializable_hash[:data][:attributes]
     rescue ActiveRecord::RecordInvalid => e 
         render json: { error: e },status: :bad_request
     end
@@ -44,7 +44,7 @@ def index
  private
 
    def device_params
-     params.require(:device).permit(:name, :device_type, :os, :user_id)
+     params.require(:device).permit(:name, :device_type, :os, :user_id, :image)
    end
 
    def find_device
