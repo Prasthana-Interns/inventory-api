@@ -21,7 +21,7 @@ class User < ApplicationRecord
     
     where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
   end
-
+                                
 private
 
   def set_emp_id 
