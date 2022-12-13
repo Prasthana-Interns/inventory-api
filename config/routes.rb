@@ -2,7 +2,6 @@ Rails.application.routes.draw do
 
   resources :users do 
     get :pending_users, on: :collection
-    post :accept_pending_request,on: :member
     get :search , on: :collection
   end  
 
