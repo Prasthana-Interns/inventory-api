@@ -14,7 +14,6 @@ Rails.application.routes.draw do
     get :unassigned, on: :collection
     get :assigned ,  on: :collection
     get :search   ,  on: :collection
-    get :latest  , on: :collection
   end
   
 end
