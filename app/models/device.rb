@@ -9,9 +9,9 @@ class Device < ApplicationRecord
         Rails.application.routes.url_helpers.url_for(image) if image.attached?
     end
 
-    def self.search(search)
+    def self.search(search )
         if search
-           where("name LIKE ? OR device_type LIKE ?", "%#{search}%", "%#{search}%")
+           where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%")
         else
             all
         end
