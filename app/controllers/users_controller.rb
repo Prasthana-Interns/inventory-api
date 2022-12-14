@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
  
-  # before_action :authorize_admin_access,except: [:create, :show]
-  # before_action :authorize_employee_access,only: [:show] 
-  before_action :set_user, only: [:update, :destroy, :accept_pending_request, :show]
+  before_action :authorize_admin_access,except: [:create, :show, :update]
+  before_action :authorize_employee_access,only: [:show, :update] 
+  before_action :set_user, only: [:update, :destroy]
 
     def index
       users = User.where("approved": true)
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
           end
         render json: @user,status: :created, serializer: SessionSerializer
       rescue ActiveRecord::RecordInvalid => e 
-        render json: { error: " email is already in use or provide correct name  instead" },status: :bad_request
+        render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
       end
     end
 
@@ -40,14 +40,14 @@ class UsersController < ApplicationController
       end
     end
 
-    def search
-      @user = User.search(params[:search])
-      render json: @user, each_serializer: UserSerializer, status: :ok
-    end
-    
     def update
-      @user.update(user_params)
-      render json: @user, status: :ok, serializer: EmployeeSerializer
+      unless @current_user.user_roles.pluck(:role_type).include?('Admin') && @current_user.id == @user.id
+        @user.update(employee_params)  
+        render json: @user, status: :ok, serializer: EmployeeSerializer
+      else
+        @user.update(user_params) 
+        render json: @user, status: :ok, serializer: EmployeeSerializer
+      end
     end
 
     def destroy
@@ -56,7 +56,7 @@ class UsersController < ApplicationController
     end
 
     def pending_users
-        @users = User.where("approved": false)
+      @users = User.where("approved": false)
       if @users.empty?
         render status: :no_content
       else
@@ -68,6 +68,10 @@ class UsersController < ApplicationController
 
     def set_user
       @user = User.find(params[:id])
+    end
+
+    def employee_params
+      params.require(:user).permit(:phone_number, :password)
     end
 
     def user_params
