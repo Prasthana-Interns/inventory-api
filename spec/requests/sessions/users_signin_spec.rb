@@ -12,6 +12,7 @@ RSpec.describe "Sessions", type: :request do
     }
   end
     it 'render the status code to success' do
+      byebug
       expect(response).to have_http_status(200)
     end
   end

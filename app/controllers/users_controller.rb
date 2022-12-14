@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
  
-  before_action :authorize_admin_access,except: [:create, :show]
-  before_action :authorize_employee_access,only: [:show] 
+  # before_action :authorize_admin_access,except: [:create, :show]
+  # before_action :authorize_employee_access,only: [:show] 
   before_action :set_user, only: [:update, :destroy, :accept_pending_request, :show]
 
     def index
@@ -64,13 +64,6 @@ class UsersController < ApplicationController
       end
     end
   
-
-    def accept_pending_request
-        @user.approved = true
-        @user.update("approved":true)
-        render json: {message: "approve successful"}, status: :ok, each_serializer: UserSerializer
-    end 
-
     private
 
     def set_user

@@ -9,12 +9,13 @@ FactoryBot.define do
     email { Faker::Internet.unique.email }
     phone_number { 9876543210 }
     designation { "Developer" }
-    approved { true } 
+    approved { true }
   end
-
-  factory :user_roles do
-    user_id { 2 }
-    role_type { 'Admin' }
-  end
-
 end
+
+
+
+
+  # factory :user_role do
+  #   role_type { 'Admin' }
+  # end
