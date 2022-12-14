@@ -3,28 +3,21 @@ require 'rails_helper'
 RSpec.describe "Users", type: :request do
   describe 'GET /index' do
     @user = FactoryBot.create(:user)
-
-      it ' signing in user' do
-       post '/users/signin', params: {
+      let!(:user) do post '/users/signin', params: {
         user: {
-          emp_id: "EMP-036",
-          password: "shiva123" }
+          emp_id:"EMP-001",
+          password: "shiva" }
         }
       @result= JSON.parse(response.body)
       @token = @result['token']
-    end
-
-    context 'login the user' do
       get '/users', headers:{ 'Authorization': @token } 
-      p JSON.parse(response.body)
-
+    end
       it 'returns all posts' do
         expect(JSON(response.body).count).to eq(1)
       end
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
-    end
   end
 end
 

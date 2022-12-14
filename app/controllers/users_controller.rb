@@ -17,7 +17,7 @@ class UsersController < ApplicationController
           end
         render json: @user,status: :created, serializer: SessionSerializer
       rescue ActiveRecord::RecordInvalid => e 
-        render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
+        render json: { error: " email is already in use or provide correct name  instead" },status: :bad_request
       end
     end
 

@@ -17,8 +17,7 @@ class User < ApplicationRecord
 
 
   def self.search(search)
-    return if search.nil?
-    
+    return all if search.nil?
     where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
   end
                                 
@@ -29,5 +28,4 @@ private
       self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
     end
   end
-  
 end
