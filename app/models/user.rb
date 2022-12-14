@@ -17,13 +17,8 @@ class User < ApplicationRecord
 
 
   def self.search(search)
-<<<<<<< HEAD
-    return  if search.nil?
-    where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
-=======
      return all if search.nil?
       where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
->>>>>>> dev
   end
                                 
 private

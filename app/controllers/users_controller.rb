@@ -41,14 +41,6 @@ class UsersController < ApplicationController
     end
 
     def update
-<<<<<<< HEAD
-      unless @current_user.user_roles.pluck(:role_type).include?('Admin') && @current_user.id == @user.id
-        @user.update(employee_params)  
-        render json: @user, status: :ok, serializer: EmployeeSerializer
-      else
-        @user.update(user_params) 
-        render json: @user, status: :ok, serializer: EmployeeSerializer
-=======
       if @current_user.user_roles.pluck(:role_type).include?('Admin')
         @user.update(user_params) 
         render json: @user, status: :ok, serializer: EmployeeSerializer  
@@ -57,7 +49,6 @@ class UsersController < ApplicationController
         render json: @user, status: :ok, serializer: EmployeeSerializer
       else
         render json:"Unauthorized"
->>>>>>> dev
       end
     end
 
@@ -82,11 +73,7 @@ class UsersController < ApplicationController
     end
 
     def employee_params
-<<<<<<< HEAD
-      params.require(:user).permit(:phone_number, :password)
-=======
       params.require(:user).permit(:phone_number, :name)
->>>>>>> dev
     end
 
     def user_params
