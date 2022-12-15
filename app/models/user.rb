@@ -18,7 +18,7 @@ class User < ApplicationRecord
 
   def self.search(search)
      return all if search.nil?
-      where("name LIKE ? OR emp_id LIKE ?", "%#{search}%", "%#{search}%")
+     where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%")
   end
                                 
 private
