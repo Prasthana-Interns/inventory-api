@@ -35,7 +35,6 @@ class ApplicationController < ActionController::API
         user_id = decoded_token[0]['user_id']
         @current_user = User.find_by!(id: user_id)
       return  unless @current_user.user_roles.pluck(:role_type).include?('Employee')
-      raise Exception  unless @current_user.user_roles.pluck(:role_type).include?('Employee')
       rescue ActiveRecord::RecordNotFound => e
         render json: { errors: e.message },status: :unauthorized
       rescue JWT::DecodeError => e
