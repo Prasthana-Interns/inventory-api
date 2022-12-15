@@ -17,13 +17,16 @@ class UsersController < ApplicationController
           end
         render json: @user,status: :created, serializer: SessionSerializer
       rescue ActiveRecord::RecordInvalid => e 
-        render json: { error: " email is already in use or provide correct data  instead" },status: :bad_request
+        render json: { error: e.message },status: :bad_request
       end
     end
 
     def search
       @user = User.search(params[:search])
-      render json: @user, each_serializer: UserSerializer, status: :ok
+      users = @user.where(approved: true)
+      if users
+      render json: users, each_serializer: UserSerializer, status: :ok
+      end
     end
 
     def show
