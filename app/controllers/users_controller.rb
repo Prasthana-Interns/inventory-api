@@ -23,9 +23,9 @@ class UsersController < ApplicationController
 
     def search
       @user = User.search(params[:search])
-      user=User.where(["name = :search or emp_id = :search", search: 'swarna'])
-      if user.approved == true
-      render json: @user, each_serializer: UserSerializer, status: :ok
+      users = @user.where(approved: true)
+      if users
+      render json: users, each_serializer: UserSerializer, status: :ok
       end
     end
 

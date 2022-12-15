@@ -5,16 +5,19 @@ class Device < ApplicationRecord
     validates :device_type, presence: true
     has_one_attached :image
     after_create :add_default_image
+
     def image_url
         Rails.application.routes.url_helpers.url_for(image) if image.attached?
     end
 
     def self.search(search )
+
         if search
            where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%")
         else
             all
         end
+
     end
 
 private
@@ -27,8 +30,8 @@ private
         image.attach(
             io:File.open(
                 Rails.root.join( 'lib',default_url  )
-            ),filename:'image.jpeg',
-            content_type:'image/jpeg'
+            ),filename:'image',
+            content_type:'image.jpeg'
         )
     end
 
