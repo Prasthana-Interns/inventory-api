@@ -12,8 +12,8 @@ def index
 
  def create
     begin
-    @device = Device.create!(device_params)
-    render json: ImageSerializer.new(@device).serializable_hash[:data][:attributes]
+      @device = Device.create!(device_params)
+      render json: ImageSerializer.new(@device).serializable_hash[:data][:attributes]
     rescue ActiveRecord::RecordInvalid => e 
         render json: { error: e },status: :bad_request
     end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Users", type: :request do
-  describe "POST /create" do
+  describe "POST #create" do
 
     context 'with valid parameters' do
           before do

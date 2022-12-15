@@ -1,9 +1,5 @@
 FactoryBot.define do
-
-  factory :application do
-    token = Rails.application.secrets.secret_key_base.to_s
-  end
-
+  
   factory :user do
     name { "shiva kummar" }
     email { Faker::Internet.unique.email }
@@ -12,10 +8,3 @@ FactoryBot.define do
     approved { true }
   end
 end
-
-
-
-
-  # factory :user_role do
-  #   role_type { 'Admin' }
-  # end
