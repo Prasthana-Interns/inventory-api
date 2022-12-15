@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:update, :destroy]
 
     def index
-      users = User.where("approved": true)
+      users = User.where("approved": true).order(:emp_id)
       render json: users,status: :ok,each_serializer: UserSerializer
     end 
     
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
 
     def search
       @user = User.search(params[:search])
-      users = @user.where(approved: true)
+      users = @user.where(approved: true).order(:emp_id)
       if users
       render json: users, each_serializer: UserSerializer, status: :ok
       end
