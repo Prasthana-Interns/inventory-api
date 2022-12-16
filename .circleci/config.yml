@@ -26,9 +26,10 @@ jobs:
           http.port: 9200
           discovery.type: single-node
 
-    parallelism: 1
-    working_directory: ~/inventory-api
+    #parallelism: 1
+    #working_directory: ~/inventory-api
 
+    
     steps:
       - checkout
 
