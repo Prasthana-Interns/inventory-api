@@ -61,7 +61,7 @@ class UsersController < ApplicationController
     end
 
     def pending_users
-      @users = User.where("approved": false)
+      @users = User.where("approved": false).order(:emp_id).reverse
       if @users.empty?
         render status: :no_content
       else
