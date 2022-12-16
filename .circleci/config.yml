@@ -3,24 +3,199 @@
 version: 2.1
 
 # Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+  build:
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      # specify the version you desire here
+      #- image: circleci/ruby:2.6.5
+       # environment:
+        #  RAILS_ENV: test
+
+      #- image: circleci/postgres:10.4-alpine-postgis
+       # environment:
+        #  POSTGRES_USER: postgres
+         # POSTGRES_DB: ace_test
+
+     # - image: redis
+      #- image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+       # environment:
+        #  cluster.name: es-docker-cluster
+         # xpack.security.enabled: false
+          #transport.host: localhost
+          #network.host: 127.0.0.1
+          #http.port: 9200
+          #discovery.type: single-node
+
+    parallelism: 1
+    working_directory: ~/inventory-api
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            gem update --system
+            gem install bundler
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+     # - run:
+      #    name: setup code climate test reporter
+       #   command: |
+        #    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.8.0-linux-amd64 > ./cc-test-reporter
+         #   chmod +x ./cc-test-reporter
+
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+
+      # Database setup
+      - run: bundle exec rake db:create
+      - run: bundle exec rake db:schema:load
+      - run: bundle exec rake db:migrate
+      - run: bundle exec rake db:seed
+      # run tests!
+      #- run:
+       #   name: run tests
+        #  command: |
+         #   ./cc-test-reporter before-build
+          #  mkdir /tmp/test-results
+
+           # TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+            #bundle exec rspec --format progress \
+             #               --format RspecJunitFormatter \
+              #              --out /tmp/test-results/rspec.xml \
+               #             --format progress \
+                #            $TEST_FILES
+
+      #            ./cc-test-reporter after-build --exit-code $?
+
+      #- run:
+          #name: Code Climate Test Coverage
+          #command: |
+           # ./cc-test-reporter format-coverage -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+      #- persist_to_workspace:
+       #   root: coverage
+        #  paths:
+         #   - codeclimate.*.json
+      #- store_test_results:
+       #   path: /tmp/test-results
+      #- store_artifacts:
+       #   path: /tmp/test-results
+        #  destination: test-results
+
+  #upload-coverage:
+   # docker:
+    #  - image: circleci/ruby:2.5.1
+    #working_directory: ~/inventory-api
+
+    #steps:
+     # - attach_workspace:
+      #    at: /tmp/coverage
+      #- run:
+       #   name: setup code climate test reporter
+        #  command: |
+         #   curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.8.0-linux-amd64 > ./cc-test-reporter
+          #  chmod +x ./cc-test-reporter
+      #- run:
+       #   command: |
+        #    ./cc-test-reporter sum-coverage --output - /tmp/coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
+
+
+
+  deploy-staging:
+    docker:
+      - image: circleci/ruby:2.6.5
+        environment:
+          RAILS_ENV: staging
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Bundle install
+          command: bundle check || bundle install
+      - run:
+          name: Deploy to aws Staging if tests pass and branch is dev
+          command: bundle exec cap staging deploy
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  deploy-production:
+    docker:
+      - image: circleci/ruby:2.6.5
+        environment:
+          RAILS_ENV: production
+    working_directory: ~/inventory-api
+    steps:
+      - checkout
+      - run:
+          name: Bundle install
+          command: bundle check || bundle install
+      - run:
+          name: Deploy to aws Production server if tests pass and branch is master
+          command: bundle exec cap production deploy
+
+  #deploy-qa:
+   # docker:
+    #  - image: circleci/ruby:2.6.5
+     #   environment:
+      #    RAILS_ENV: qa
+    #working_directory: ~/repo
+    #steps:
+     # - checkout
+      #- run:
+       #   name: Bundle install
+        #  command: bundle check || bundle install
+      #- run:
+       #   name: Deploy to aws qa server if tests pass and branch is qa
+        #  command: bundle exec cap qa deploy
+
 workflows:
-  say-hello-workflow:
+  version: 2
+
+  build_and_deploy:
     jobs:
-      - say-hello
+      - build:
+          context: ace-staging
+      - upload-coverage:
+          context: ace-staging
+          requires:
+            - build
+      - deploy-staging:
+          requires:
+            - build
+          filters:
+            branches:
+              only: dev
+
+     # - build:
+      #    context: ace-qa
+      #- upload-coverage:
+       #   context: ace-qa
+        #  requires:
+         #   - build
+      #- deploy-qa:
+       #   requires:
+        #    - build
+         # filters:
+          #  branches:
+           #   only: qa
+      
+      - build:
+          context: ace-production
+      - upload-coverage:
+          context: ace-production
+          requires:
+            - build
+      - deploy-production:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
