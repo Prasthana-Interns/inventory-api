@@ -47,7 +47,7 @@ class UsersController < ApplicationController
       if @current_user.user_roles.pluck(:role_type).include?('Admin')
         @user.update(user_params) 
         render json: @user, status: :ok, serializer: EmployeeSerializer  
-      elsif @current_user.user_roles.pluck(:role_type)==['Employee'] && @current_user.id ==@user.id #params[:id].to_i
+      elsif @current_user.user_roles.pluck(:role_type)==['Employee'] && @current_user.id ==@user.id 
         @user.update(employee_params)  
         render json: @user, status: :ok, serializer: EmployeeSerializer
       else
