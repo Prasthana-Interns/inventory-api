@@ -92,39 +92,6 @@ jobs:
        #   path: /tmp/test-results
         #  destination: test-results
 
-  #upload-coverage:
-   # docker:
-    #  - image: circleci/ruby:2.5.1
-    #working_directory: ~/inventory-api
-
-    #steps:
-     # - attach_workspace:
-      #    at: /tmp/coverage
-      #- run:
-       #   name: setup code climate test reporter
-        #  command: |
-         #   curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.8.0-linux-amd64 > ./cc-test-reporter
-          #  chmod +x ./cc-test-reporter
-      #- run:
-       #   command: |
-        #    ./cc-test-reporter sum-coverage --output - /tmp/coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
-
-
-
-  deploy-staging:
-    docker:
-      - image: circleci/ruby:2.6.5
-        environment:
-          RAILS_ENV: staging
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Bundle install
-          command: bundle check || bundle install
-      - run:
-          name: Deploy to aws Staging if tests pass and branch is dev
-          command: bundle exec cap staging deploy
 
   deploy-production:
     docker:
@@ -141,52 +108,11 @@ jobs:
           name: Deploy to aws Production server if tests pass and branch is master
           command: bundle exec cap production deploy
 
-  #deploy-qa:
-   # docker:
-    #  - image: circleci/ruby:2.6.5
-     #   environment:
-      #    RAILS_ENV: qa
-    #working_directory: ~/repo
-    #steps:
-     # - checkout
-      #- run:
-       #   name: Bundle install
-        #  command: bundle check || bundle install
-      #- run:
-       #   name: Deploy to aws qa server if tests pass and branch is qa
-        #  command: bundle exec cap qa deploy
-
 workflows:
   #version: 2.1
 
   #build_and_deploy:
-   jobs:
-    #  - build:
-     #     context: ace-staging
-      #- upload-coverage:
-       #   context: ace-staging
-        #  requires:
-         #   - build
-      #- deploy-staging:
-       #   requires:
-        #    - build
-         # filters:
-          #  branches:
-           #   only: dev
-
-     # - build:
-      #    context: ace-qa
-      #- upload-coverage:
-       #   context: ace-qa
-        #  requires:
-         #   - build
-      #- deploy-qa:
-       #   requires:
-        #    - build
-         # filters:
-          #  branches:
-           #   only: qa
-      
+   jobs:   
       - build:
           context: ace-production
       - upload-coverage:
