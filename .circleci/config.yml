@@ -159,20 +159,20 @@ jobs:
 workflows:
   version: 2
 
-  build_and_deploy:
-    jobs:
-      - build:
-          context: ace-staging
-      - upload-coverage:
-          context: ace-staging
-          requires:
-            - build
-      - deploy-staging:
-          requires:
-            - build
-          filters:
-            branches:
-              only: dev
+  #build_and_deploy:
+   jobs:
+    #  - build:
+     #     context: ace-staging
+      #- upload-coverage:
+       #   context: ace-staging
+        #  requires:
+         #   - build
+      #- deploy-staging:
+       #   requires:
+        #    - build
+         # filters:
+          #  branches:
+           #   only: dev
 
      # - build:
       #    context: ace-qa
