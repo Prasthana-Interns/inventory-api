@@ -157,7 +157,7 @@ jobs:
         #  command: bundle exec cap qa deploy
 
 workflows:
-  version: 2.1
+  #version: 2.1
 
   #build_and_deploy:
    jobs:
