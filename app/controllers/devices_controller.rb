@@ -1,12 +1,12 @@
 class DevicesController < ApplicationController
      before_action :authorize_admin_access
 def index
-    devices = Device.all
+    devices = Device.all.order(:device_no)
     render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
 
  def search
-     @device = Device.search(params[:search])
+     @device = Device.search(params[:search]).order(:device_no)
      render json: @device, each_serializer: DeviceSerializer, status: :ok
  end
 
@@ -32,12 +32,12 @@ def index
  end
 
  def assigned
-     devices = Device.where.not(user_id: nil)
+     devices = Device.where.not(user_id: nil).order(:device_no)
        render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
 
  def unassigned
-     devices = Device.where(user_id: nil)
+     devices = Device.where(user_id: nil).order(:device_no)
      render json: devices, each_serializer: DeviceSerializer, status: :ok
  end
 
