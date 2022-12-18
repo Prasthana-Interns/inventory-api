@@ -2,127 +2,29 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  ruby: circleci/ruby@1.4.0
+
 # Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      #- image: circleci/ruby:2.6.5
-       # environment:
-        #  RAILS_ENV: test
-
-      - image: circleci/postgres:10.4-alpine-postgis
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: inventory-api
-
-     #- image: redis
-      - image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
-        environment:
-          cluster.name: es-docker-cluster
-          xpack.security.enabled: false
-          transport.host: localhost
-          network.host: 127.0.0.1
-          http.port: 9200
-          discovery.type: single-node
-
-    #parallelism: 1
-    #working_directory: ~/inventory-api
-
-    
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run:
-          name: install dependencies
-          command: |
-            gem update --system
-            gem install bundler
-            bundle install --jobs=4 --retry=3 --path vendor/bundle
-
-     # - run:
-      #    name: setup code climate test reporter
-       #   command: |
-        #    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.8.0-linux-amd64 > ./cc-test-reporter
-         #   chmod +x ./cc-test-reporter
-
-      - save_cache:
-          paths:
-            - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-
-      # Database setup
-      - run: bundle exec rake db:create
-      #- run: bundle exec rake db:schema:load
-      - run: bundle exec rake db:migrate
-      #- run: bundle exec rake db:seed
-      # run tests!
-      #- run:
-       #   name: run tests
-        #  command: |
-         #   ./cc-test-reporter before-build
-          #  mkdir /tmp/test-results
-
-           # TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
-            #bundle exec rspec --format progress \
-             #               --format RspecJunitFormatter \
-              #              --out /tmp/test-results/rspec.xml \
-               #             --format progress \
-                #            $TEST_FILES
-
-      #            ./cc-test-reporter after-build --exit-code $?
-
-      #- run:
-          #name: Code Climate Test Coverage
-          #command: |
-           # ./cc-test-reporter format-coverage -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
-      #- persist_to_workspace:
-       #   root: coverage
-        #  paths:
-         #   - codeclimate.*.json
-      #- store_test_results:
-       #   path: /tmp/test-results
-      #- store_artifacts:
-       #   path: /tmp/test-results
-        #  destination: test-results
-
-
-  deploy-production:
-    docker:
-      - image: circleci/ruby:2.6.5
-        environment:
-          RAILS_ENV: production
-    working_directory: ~/inventory-api
+      - image: cimg/ruby:3.1.0
+    executor: ruby/default
     steps:
       - checkout
       - run:
-          name: Bundle install
-          command: bundle check || bundle install
-      - run:
-          name: Deploy to aws Production server if tests pass and branch is master
-          command: bundle exec cap production deploy
+          name: Which bundler?
+          command: bundle -v
+      - ruby/bundle-install
 
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  #version: 2.1
-
-  #build_and_deploy:
-   jobs:   
-      - build:
-          context: ace-production
-      - upload-coverage:
-          context: ace-production
-          requires:
-            - build
-      - deploy-production:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
+    jobs:
+      - build
