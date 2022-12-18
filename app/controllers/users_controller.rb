@@ -5,7 +5,6 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show,:update, :destroy]
 
     def index
-      byebug
       users = User.where(approved: true).order(:emp_id)
       render json: users,status: :ok,each_serializer: UserSerializer
     end 
