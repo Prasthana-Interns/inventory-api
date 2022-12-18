@@ -7,32 +7,24 @@ class Device < ApplicationRecord
     after_create :add_default_image
 
     def image_url
-        Rails.application.routes.url_helpers.url_for(image) if image.attached?
+     Rails.application.routes.url_helpers.url_for(image) if image.attached?
     end
 
-    def self.search(search )
+    scope :search, ->(search) {(search.nil? ? all : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
 
-        if search
-           where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%")
-        else
-            all
-        end
-
-    end
-
-private
+ private
 
     def create_dev_no
-        update(device_no:"DEV_#{self.id.to_s.rjust(3,'0')}")
+     update(device_no:"DEV_#{self.id.to_s.rjust(3,'0')}")
     end
 
     def add_default_image
-        image.attach(
-            io:File.open(
-                Rails.root.join( 'lib',default_url  )
-            ),filename:'image',
-            content_type:'image.jpeg'
-        )
+     image.attach(
+        io:File.open(
+            Rails.root.join( 'lib',default_url  )
+        ),filename:'image',
+        content_type:'image.jpeg'
+      )
     end
 
 end
