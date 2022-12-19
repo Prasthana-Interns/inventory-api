@@ -22,11 +22,8 @@ class UsersController < ApplicationController
     end
 
     def search
-      @user = User.search(params[:search])
-      users = @user.where(approved: true).order(:emp_id)
-      if users
+      users = User.search(params[:search]).order(:emp_id)
       render json: users, each_serializer: UserSerializer, status: :ok
-      end
     end
 
     def show
