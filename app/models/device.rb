@@ -20,11 +20,11 @@ class Device < ApplicationRecord
     end
 
     def add_default_image
+     device_path = default_url
      image.attach(
         io:File.open(
-            Rails.root.join( 'lib',default_url  )
-        ),filename:'image',
-        content_type:'image.jpeg'
+            Rails.root.join( 'lib',device_path )
+        ),filename: device_path
       )
     end
 
