@@ -10,17 +10,13 @@ class User < ApplicationRecord
   validates :name,presence: true,length: {minimum: 3},format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/ }
 
   VALID_PHONE_REGIX = /\d[0-9]\)*\z/  
-  validates :phone_number,format: { with: VALID_PHONE_REGIX },presence: true,length: {minimum:10 ,maximum: 10}
+  validates :phone_number,format: { with: VALID_PHONE_REGIX },presence: true,length: {minimum:10 ,maximum: 10},uniqueness: true
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   validates :email,presence: true,format: { with: VALID_EMAIL_REGEX},uniqueness: {case_sensitive: false}
 
-
-  def self.search(search)
-     return all if search.nil?
-     where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%")
-  end
-
+  scope :search, ->(search) {(search.nil? ? index : where(approved: true).where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}   
+                                
 private
 
   def set_emp_id 
@@ -28,5 +24,4 @@ private
       self.update( emp_id:"EMP-#{self.id.to_s.rjust(3,'0')}" )
     end
   end
-  
 end
