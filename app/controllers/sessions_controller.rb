@@ -19,8 +19,8 @@ class SessionsController < ApplicationController
 
   def reset_password
    user = User.find_by_emp_id(params[:emp_id])
-   user.update(password_digest: nil)
-   head :ok 
+   user.update(password_digest: nil) unless user.nil?
+   head :ok unless user.nil?
   end
 
 end
