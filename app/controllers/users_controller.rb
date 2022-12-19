@@ -35,8 +35,10 @@ class UsersController < ApplicationController
     end
 
     def update
-      @user.update(user_params)
-      render json: @user, status: :ok, serializer: EmployeeSerializer  
+      @user.update!(user_params)
+      render json: @user, status: :ok, serializer: EmployeeSerializer
+      rescue ActiveRecord::RecordInvalid => e 
+        render json: { error: e.message },status: :unprocessable_entity
     end
 
     def destroy

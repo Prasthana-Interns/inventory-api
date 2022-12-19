@@ -18,13 +18,9 @@ class SessionsController < ApplicationController
   end
 
   def reset_password
-   user = User.find_by_emp_id!(params[:emp_id])
+   user = User.find_by_emp_id(params[:emp_id])
    user.update(password_digest: nil)
-    if user.password == nil
-      render json: {message: "Your password as been reset successfully! "},status: :ok
-    end
-    rescue ActiveRecord::RecordNotFound => e
-      render json: { errors: e.message },status: :not_found
+   head :ok 
   end
 
 end

@@ -10,7 +10,7 @@ class Device < ApplicationRecord
      Rails.application.routes.url_helpers.url_for(image) if image.attached?
     end
 
-    scope :search, ->(search) {(search.nil? ? all : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
+    scope :search, ->(search) {(search.nil? ? index : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
 
  private
 
