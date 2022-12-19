@@ -11,7 +11,8 @@ class Device < ApplicationRecord
     end
 
     scope :search, ->(search) {(search.nil? ? all : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
-
+    scope :assigned_list, ->{where.not(user_id: nil)} 
+    scope :unassigned_list, ->{where(user_id: nil)}
  private
 
     def create_dev_no
