@@ -1,6 +1,7 @@
 class DevicesController < ApplicationController
       before_action :authorize_admin_access
       before_action :find_device, only: [:destroy, :update]
+      
    def index
       devices = Device.all.order(:device_no)
       render json: devices, each_serializer: DeviceSerializer, status: :ok
@@ -14,7 +15,7 @@ class DevicesController < ApplicationController
    def create
       begin
          device = Device.create!(device_params)
-         render json: device, serializer: DeviceSerializer, status: :ok
+         render json: device, serializer: DeviceSerializer, status: :created
       rescue ActiveRecord::RecordInvalid => e 
          render json: { error: e.message }, status: :unprocessable_entity
       end
@@ -48,4 +49,5 @@ class DevicesController < ApplicationController
    def find_device
       @device = Device.find(params[:id])
    end
+
 end
