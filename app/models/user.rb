@@ -16,7 +16,7 @@ class User < ApplicationRecord
   validates :email,presence: true,format: { with: VALID_EMAIL_REGEX},uniqueness: {case_sensitive: false}
 
   scope :search, ->(search) {(search.nil? ? index : where(approved: true).where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}   
-                                
+  scope :pending, ->{where(approved: false)}                             
 private
 
   def set_emp_id 

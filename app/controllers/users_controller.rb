@@ -45,7 +45,7 @@ class UsersController < ApplicationController
     end
 
     def pending
-      users = User.where(approved: false).order(created_at: :desc)
+      users = User.pending.order(created_at: :desc)
       render json:users, status: :ok, each_serializer: EmployeeSerializer
     end
   
