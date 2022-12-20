@@ -7,7 +7,7 @@ class User < ApplicationRecord
   
   before_save {self.email = email.downcase}
 
-  validates :name,presence: true,length: { minimum: 3 } 
+  validates :name,presence: true,length: { minimum: 3 } , format: {with: /\A[^0-9`!@#\$%\^&*+_=]+\z/}
 
   VALID_PHONE_REGIX = /\d[0-9]\)*\z/  
   validates :phone_number,format: { with: VALID_PHONE_REGIX },presence: true, length: { is: 10 },uniqueness: true
