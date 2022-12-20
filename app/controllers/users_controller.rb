@@ -45,9 +45,8 @@ class UsersController < ApplicationController
     end
 
     def pending
-      users = User.where(approved: false)
-      head :no_content if users.empty?
-      render json:users, status: :ok, each_serializer: EmployeeSerializer unless users.empty?
+      users = User.pending.order(created_at: :desc)
+      render json:users, status: :ok, each_serializer: EmployeeSerializer
     end
   
     private
