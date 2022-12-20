@@ -3,12 +3,12 @@ class DevicesController < ApplicationController
       before_action :find_device, only: [:destroy, :update]
       
    def index
-      devices = Device.all.order(:device_no)
+      devices = Device.all.order(created_at: :asc)
       render json: devices, each_serializer: DeviceSerializer, status: :ok
    end
 
    def search
-      device = Device.search(params[:search]).order(:device_no)
+      device = Device.search(params[:search]).order(created_at: :asc)
       render json: device, each_serializer: DeviceSerializer, status: :ok
    end
 
@@ -31,12 +31,12 @@ class DevicesController < ApplicationController
    end
 
    def assigned
-      devices = Device.assigned_list.order(:device_no)
+      devices = Device.assigned_list.order(created_at: :asc)
       render json: devices, each_serializer: DeviceSerializer, status: :ok
    end
 
    def unassigned
-      devices = Device.unassigned_list.order(:device_no)
+      devices = Device.unassigned_list.order(created_at: :asc)
       render json: devices, each_serializer: DeviceSerializer, status: :ok
    end
 
