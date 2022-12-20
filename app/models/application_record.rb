@@ -1,7 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 
-  def default_url
+  def default_path
     case Device.last.device_type.downcase
     when "laptop"
       'laptop.png'

@@ -10,7 +10,7 @@ class Device < ApplicationRecord
      Rails.application.routes.url_helpers.url_for(image) if image.attached?
     end
 
-    scope :search, ->(search) {(search.nil? ? index : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
+    scope :search, ->(search) {(search.nil? ? all : where('lower(name) LIKE lower(?) OR lower(device_type) LIKE lower(?)', "%#{search}%", "%#{search}%"))}
     scope :assigned_list, ->{where.not(user_id: nil)} 
     scope :unassigned_list, ->{where(user_id: nil)}
  private
@@ -20,11 +20,11 @@ class Device < ApplicationRecord
     end
 
     def add_default_image
+     image_path = default_path
      image.attach(
         io:File.open(
-            Rails.root.join( 'lib',default_url  )
-        ),filename:'image',
-        content_type:'image.jpeg'
+            Rails.root.join( 'lib',image_path )
+        ),filename: image_path
       )
     end
 
