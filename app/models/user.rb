@@ -15,8 +15,8 @@ class User < ApplicationRecord
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   validates :email,presence: true,format: { with: VALID_EMAIL_REGEX},uniqueness: {case_sensitive: false}
 
-  scope :search, ->(search) {(search.nil? ? index : where(approved: true).where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}
-  scope :users_list, -> { where(approved: true).order(:emp_id) }   
+  scope :search, ->(search) {(search.nil? ? index : approved.where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}
+  scope :approved, -> { where(approved: true).order(:emp_id) }   
                                 
 private
 

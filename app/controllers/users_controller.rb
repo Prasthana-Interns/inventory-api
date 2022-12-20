@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show,:update, :destroy]
 
     def index
-      users = User.users_list
+      users = User.approved
       render json: users,status: :ok,each_serializer: UserSerializer
     end 
     
@@ -35,10 +35,12 @@ class UsersController < ApplicationController
     end
 
     def update
+      begin
       @user.update!(user_params)
       render json: @user, status: :ok, serializer: EmployeeSerializer
       rescue ActiveRecord::RecordInvalid => e 
         render json: { error: e.message },status: :unprocessable_entity
+      end
     end
 
     def destroy
@@ -48,8 +50,7 @@ class UsersController < ApplicationController
 
     def pending
       users = User.where(approved: false)
-      head :no_content if users.empty?
-      render json:users, status: :ok, each_serializer: EmployeeSerializer unless users.empty?
+      render json:users, status: :ok, each_serializer: EmployeeSerializer
     end
   
     private
