@@ -14,17 +14,14 @@ class SessionsController < ApplicationController
         render json: { message: "unauthorized" },status: :unauthorized
       end
     rescue ActiveRecord::RecordNotFound => e
-      render json: { errors: e.message },status: :not_found
+      render json: { errors: "Invalid emp_id or password" },status: :unprocessable_entity
   end
 
   def reset_password
-   user = User.find_by_emp_id!(params[:emp_id])
-   user.update(password_digest: nil)
-    if user.password == nil
-      render json: {message: "Your password as been reset successfully! "},status: :ok
-    end
-    rescue ActiveRecord::RecordNotFound => e
-      render json: { errors: e.message },status: :not_found
+   user = User.find_by_emp_id(params[:emp_id])
+   return if user.nil?
+   user.update(password_digest: nil) 
+   head :ok 
   end
 
 end

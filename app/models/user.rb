@@ -7,15 +7,16 @@ class User < ApplicationRecord
   
   before_save {self.email = email.downcase}
 
-  validates :name,presence: true,length: {minimum: 3},format: { with: /\A[a-zA-Z]+(?: [a-zA-Z]+)?\z/ }
+  validates :name,presence: true,length: { minimum: 3 } , format: {with: /\A[^0-9`!@#\$%\^&*+_=]+\z/}
 
   VALID_PHONE_REGIX = /\d[0-9]\)*\z/  
-  validates :phone_number,format: { with: VALID_PHONE_REGIX },presence: true,length: {minimum:10 ,maximum: 10},uniqueness: true
+  validates :phone_number,format: { with: VALID_PHONE_REGIX },presence: true, length: { is: 10 },uniqueness: true
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   validates :email,presence: true,format: { with: VALID_EMAIL_REGEX},uniqueness: {case_sensitive: false}
 
-  scope :search, ->(search) {(search.nil? ? index : where(approved: true).where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}   
+  scope :search, ->(search) {(search.nil? ? all : approved.where('lower(name) LIKE lower(?) OR lower(emp_id) LIKE lower(?)', "%#{search}%", "%#{search}%") )}
+  scope :approved, -> { where(approved: true).order(:emp_id) }   
   scope :pending, ->{where(approved: false)}                             
 private
 

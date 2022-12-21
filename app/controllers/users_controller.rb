@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show,:update, :destroy]
 
     def index
-      users = User.where(approved: true).order(created_at: :asc)
+      users = User.approved
       render json: users,status: :ok,each_serializer: UserSerializer
     end 
     
@@ -35,8 +35,12 @@ class UsersController < ApplicationController
     end
 
     def update
-      @user.update(user_params)
-      render json: @user, status: :ok, serializer: EmployeeSerializer  
+      begin
+      @user.update!(user_params)
+      render json: @user, status: :ok, serializer: EmployeeSerializer
+      rescue ActiveRecord::RecordInvalid => e 
+        render json: { error: e.message },status: :unprocessable_entity
+      end
     end
 
     def destroy
