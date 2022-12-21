@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     end
 
     def search
-      users = User.search(params[:search]).order(:emp_id)
+      users = User.search(params[:search]).order(created_at: :asc)
       render json: users, each_serializer: UserSerializer, status: :ok
     end
 

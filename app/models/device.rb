@@ -16,7 +16,7 @@ class Device < ApplicationRecord
  private
 
     def create_dev_no
-     update(device_no:"DEV_#{self.id.to_s.rjust(3,'0')}")
+     update(device_no:"DEV-#{self.id.to_s.rjust(3,'0')}")
     end
 
     def add_default_image
